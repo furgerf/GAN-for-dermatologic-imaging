@@ -1,0 +1,123 @@
+version: '3.2'
+
+services:
+  gan-for-medical:
+    build: .
+    environment:
+      APP_DIR: "$HOME/git/vm2-gan-code"
+      NVIDIA_VISIBLE_DEVICES: "${GPU_NR:-0}"
+    volumes:
+      - type: bind
+        source: ${HOME}/git/vm2-gan-code
+        target: ${HOME}/git/vm2-gan-code
+      - type: bind
+        source: ${HOME}/data
+        target: ${HOME}/data
+      - type: bind
+        source: ${HOME}/output
+        target: ${HOME}/output
+      - type: bind
+        source: ${HOME}/old-output
+        target: ${HOME}/old-output
+      - type: bind
+        source: ${HOME}/isic-gans
+        target: ${HOME}/isic-gans
+      - type: bind
+        source: ${HOME}/.keras
+        target: ${HOME}/.keras
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash -c 'su iafurger'
+
+  auto-execute:
+    build:
+      context: .
+      dockerfile: Dockerfile-auto-execute
+    environment:
+      APP_DIR: "$HOME/git/vm2-gan-code"
+      NVIDIA_VISIBLE_DEVICES: "${GPU_NR:-0}"
+      TEST: "${TEST}"
+    volumes:
+      - type: bind
+        source: ${HOME}/git/vm2-gan-code
+        target: ${HOME}/git/vm2-gan-code
+      - type: bind
+        source: ${HOME}/data
+        target: ${HOME}/data
+      - type: bind
+        source: ${HOME}/output
+        target: ${HOME}/output
+      - type: bind
+        source: ${HOME}/.keras
+        target: ${HOME}/.keras
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash -c 'su iafurger'
+
+  auto-execute-1:
+    build:
+      context: .
+      dockerfile: Dockerfile-auto-execute
+    environment:
+      APP_DIR: "$HOME/git/vm2-gan-code"
+      NVIDIA_VISIBLE_DEVICES: "${GPU_NR:-1}"
+      TEST: "${TEST}"
+    volumes:
+      - type: bind
+        source: ${HOME}/git/vm2-gan-code
+        target: ${HOME}/git/vm2-gan-code
+      - type: bind
+        source: ${HOME}/data
+        target: ${HOME}/data
+      - type: bind
+        source: ${HOME}/output
+        target: ${HOME}/output
+      - type: bind
+        source: ${HOME}/.keras
+        target: ${HOME}/.keras
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash -c 'su iafurger'
+
+  tensorboard:
+    build:
+      context: .
+      dockerfile: Dockerfile-tensorboard
+    ports:
+      - "6006:6006"
+      - "8888:8888"
+    environment:
+      APP_DIR: "$HOME/git/vm2-gan-code"
+    volumes:
+      - type: bind
+        source: ${HOME}/git/vm2-gan-code
+        target: ${HOME}/git/vm2-gan-code
+      - type: bind
+        source: ${HOME}/output
+        target: ${HOME}/output
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash -c 'su iafurger'
+
+  fastai:
+    build:
+      context: .
+      dockerfile: Dockerfile-fastai
+    environment:
+      APP_DIR: "$HOME/git/vm2-gan-code"
+      NVIDIA_VISIBLE_DEVICES: "${GPU_NR:-0}"
+      EID: "${EID}"
+      ARGS: "${ARGS}"
+    volumes:
+      - type: bind
+        source: ${HOME}/git/vm2-gan-code
+        target: ${HOME}/git/vm2-gan-code
+      - type: bind
+        source: ${HOME}/data
+        target: ${HOME}/data
+      - type: bind
+        source: ${HOME}/output
+        target: ${HOME}/output
+    stdin_open: true
+    tty: true
+    entrypoint: /bin/bash -c 'su iafurger'
